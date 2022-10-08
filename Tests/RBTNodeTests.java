@@ -3,6 +3,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 
 public class RBTNodeTests {
+
     private final int DEFAULT_VALUE = 15;
     private RBTNode node = new RBTNode(DEFAULT_VALUE, null);
     private RBTNode childNode = new RBTNode(DEFAULT_VALUE, null);
