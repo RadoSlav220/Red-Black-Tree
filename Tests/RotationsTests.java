@@ -68,7 +68,7 @@ public class RotationsTests {
         expected.getRight().setRight(new RBTNode(36, expected.getRight(), Color.BLACK));
 
         //Act
-        Node result = Rotations.left(root);
+        Node result = Rotations.right(root);
 
         //Assert
         assertTrue(TreeComparator.equalTrees(result, expected), "The tree must be properly rotated.");

@@ -9,5 +9,6 @@ public interface Node {
     void setRight(RBTNode node);
     void setParent(RBTNode parent);
     void setValue(int value);
-    void changeColor(Color color);
+    void setColor(Color color);
+    void flipColor();
 }
