@@ -11,7 +11,8 @@ public class TreeComparator {
         }
         for (int i=0; i<nodes1.size(); ++i){
             //If written using gererics, != must be replaced with 'equals()'
-            if (nodes1.get(i).getValue() != nodes2.get(i).getValue()){
+            if (nodes1.get(i).getValue() != nodes2.get(i).getValue() ||
+                nodes1.get(i).getColor() != nodes2.get(i).getColor() ){
                 return false;
             }
         }
