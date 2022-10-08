@@ -36,42 +36,22 @@ public class RedBlackTree {
         other.size = tempSize;
     }
 
-    public boolean add(Node parent, Node currentNode, int value){
-        if (this.size == 0) {
-            this.root = new RBTNode(value);
-            return true;
-        }
-        if (currentNode == null) {
-            currentNode = new RBTNode(value, parent);
-            this.size++;
-            if (parent.getRight().getColor() == Color.RED && parent.getLeft().getColor() != Color.RED) {
-                parent = Rotations.left(parent);
-            } else if (parent.getLeft().getColor() == Color.RED && parent.getLeft().getLeft().getColor() == Color.RED) {
-                parent = Rotations.right(parent);
-            } else if (parent.getLeft().getColor() == Color.RED && parent.getRight().getColor() == Color.RED) {
-                parent = Rotations.flipColors(parent);
-            }
-            return true;
-        } else if (currentNode.getValue() == value) {
-            return false;
-        }
-
-        if (currentNode.getValue() > value) {
-            add(currentNode, currentNode.getRight(), value);
-        } else {
-            add(currentNode, currentNode.getLeft(), value);
-        }
+    public boolean add(int value){
         return true;
     }
 
-    public boolean remove(Node parent, Node currentNode, int value){
+    public boolean remove(int value){
         if (this.size == 0) {
             return false;
         }
         return true;
     }
 
-    public boolean contains(Node currentNode, int value){
+    public boolean contains(int value){
+        return contains(root, value);
+    }
+
+    private boolean contains(Node currentNode, int value){
         if (currentNode == null) {
             return false;
         }
