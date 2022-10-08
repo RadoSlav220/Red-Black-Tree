@@ -68,7 +68,12 @@ public class RBTNode implements Node {
     }
 
     @Override
-    public void changeColor(Color color) {
+    public void setColor(Color color) {
         this.color = color;
+    }
+
+    @Override
+    public void flipColor(){
+        this.color = this.color == Color.BLACK ? Color.RED : Color.BLACK;
     }
 }

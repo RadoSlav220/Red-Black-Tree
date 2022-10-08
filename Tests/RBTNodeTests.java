@@ -246,15 +246,15 @@ public class RBTNodeTests {
     }
 
     @Test
-    public void changeColor_setNode_expectsDifferentColorNode() {
+    public void setColor_setNode_expectsDifferentColorNode() {
         node.setValue(500);
         node.setParent(new RBTNode(DEFAULT_VALUE, null));
 
-        node.changeColor(Color.BLACK);
+        node.setColor(Color.BLACK);
 
         assertEquals(Color.BLACK, node.getColor());
 
-        node.changeColor(Color.RED);
+        node.setColor(Color.RED);
 
         assertEquals(Color.RED, node.getColor());
     }
