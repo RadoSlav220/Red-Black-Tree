@@ -8,6 +8,16 @@ public class Rotations {
     }
 
     public static Node flipColors(Node root){
-        return null;
+        /*
+        if (root.getParent() == null) {
+            root.getLeft().changeColor();
+            root.getRight().changeColor();
+        } else {
+            root.changeColor();
+            root.getLeft().changeColor();
+            root.getRight().changeColor();
+        }
+        */
+        return root;
     }
 }

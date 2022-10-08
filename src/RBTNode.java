@@ -1,12 +1,17 @@
 public class RBTNode implements Node {
+
     private int value;
     private Color color;
     private Node parent;
     private Node left;
     private Node right;
 
+
+    public RBTNode (int value) {
+        this(value, null, Color.BLACK);
+    }
+
     public RBTNode (int value, Node parent) {
-        //Is RED always the case when creating a Node?
         this(value, parent, Color.RED);
     }
 

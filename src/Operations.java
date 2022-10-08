@@ -3,7 +3,7 @@ public class Operations {
         return null;
     }
 
-    public static Node insert(Node root, int value){
+    public static Node insert(Node tree, int value){
         return null;
     }
 }
