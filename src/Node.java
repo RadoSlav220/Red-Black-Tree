@@ -5,7 +5,9 @@ public interface Node {
     Node getRight();
     Color getColor();
 
-    void setLeft();
-    void setRight();
-    void setParent();
+    void setLeft(RBTNode node);
+    void setRight(RBTNode node);
+    void setParent(RBTNode parent);
+    void setValue(int value);
+    void changeColor(Color color);
 }
