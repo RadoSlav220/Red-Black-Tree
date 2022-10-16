@@ -5,53 +5,39 @@ import static org.junit.jupiter.api.Assertions.*;
 public class RBTNodeTests {
 
     private final int DEFAULT_VALUE = 15;
-    private RBTNode node = new RBTNode(DEFAULT_VALUE, null);
-    private RBTNode childNode = new RBTNode(DEFAULT_VALUE, null);
+    private RBTNode node = new RBTNode(DEFAULT_VALUE);
+    private RBTNode childNode = new RBTNode(DEFAULT_VALUE + 10, node);
 
     @Test
     public void constructor_setRoot_expectsParentEqualToNull() {
-        node.setValue(5);
-        node.setParent(null);
-        node.setRight(null);
-        node.setLeft(null);
-
+        // Act, Assert
         assertNull(node.getParent());
-        assertEquals(5, node.getValue());
+        assertEquals(15, node.getValue());
         assertEquals(Color.BLACK, node.getColor());
-        assertEquals(Color.BLACK, node.getLeft().getColor());
-        assertEquals(Color.BLACK, node.getRight().getColor());
     }
 
     @Test
     public void constructor_setChildNode_expectsParentEqualToRoot() {
-        node.setValue(5);
-        node.setParent(null);
-        node.setRight(null);
-        node.setLeft(null);
-        childNode.setValue(6);
+        // Arrange
         node.setRight(childNode);
-        childNode.setParent(node);
-        childNode.setRight(null);
-        childNode.setLeft(null);
 
-        assertEquals(5, childNode.getParent().getValue());
-        assertEquals(6, childNode.getValue());
+        // Assert
+        assertEquals(15, childNode.getParent().getValue());
+        assertEquals(25, childNode.getValue());
         assertEquals(Color.RED, childNode.getColor());
-        assertEquals(Color.BLACK, childNode.getLeft().getColor());
-        assertEquals(Color.BLACK, childNode.getRight().getColor());
+        assertEquals(Color.BLACK, childNode.getParent().getColor());
     }
 
     @Test
     public void getValue_setRoot_expectsRootValue() {
-        node.setValue(20873);
-        node.setRight(null);
-        node.setLeft(null);
-        node.setParent(null);
+        // Arrange
+        RBTNode node = new RBTNode(20873);
 
+        // Assert
         assertNull(node.getParent());
         assertNull(node.getLeft());
         assertNull(node.getRight());
-        assertEquals(5, node.getValue());
+        assertEquals(20873, node.getValue());
         assertEquals(Color.BLACK, node.getColor());
     }
 
@@ -152,110 +138,82 @@ public class RBTNodeTests {
 
     @Test
     public void getColor_setRootWithoutChildren_expectsBlackRootWithBlackChildren() {
-        node.setValue(500);
-        node.setParent(null);
-        node.setRight(null);
-        node.setLeft(null);
+        // Arrange
+        RBTNode root = new RBTNode(44);
 
-        assertEquals(Color.BLACK, node.getColor());
-        assertEquals(Color.BLACK, node.getRight().getColor());
-        assertEquals(Color.BLACK, node.getLeft().getColor());
+        // Assert
+        assertEquals(Color.BLACK, root.getColor());
+        assertNull(root.getRight());
+        assertNull(root.getLeft());
     }
 
     @Test
-    public void getColor_setRootWithChild_expectsBlackRootWithBlackChild() {
-        node.setValue(500);
-        node.setParent(null);
-        node.setRight(null);
-        node.setLeft(null);
-
-        childNode.setValue(3345);
-        node.setRight(childNode);
-        childNode.setParent(node);
-        childNode.setRight(null);
-        childNode.setLeft(null);
-
+    public void getColor_setRootWithChild_expectsBlackRootWithRedChild() {
+        //Assert
         assertEquals(Color.BLACK, node.getColor());
         assertEquals(Color.RED, node.getRight().getColor());
-        assertEquals(Color.BLACK, node.getLeft().getColor());
     }
 
     @Test
     public void setLeft_setRootWithLeftChild_expectsLeftChild() {
-        node.setValue(500);
-        node.setParent(null);
-        node.setRight(null);
-        node.setLeft(null);
+        // Arrange
+        childNode = new RBTNode(2, node);
 
-        childNode.setValue(333);
-        node.setLeft(childNode);
-        childNode.setParent(node);
-        childNode.setRight(null);
-        childNode.setLeft(null);
-
+        // Act, Assert
         assertEquals(childNode, node.getLeft());
         assertEquals(Color.RED, node.getLeft().getColor());
     }
 
     @Test
     public void setRight_setRootWithRightChild_expectsRightChild() {
+        // Arrange
         node.setValue(500);
-        node.setParent(null);
-        node.setRight(null);
-        node.setLeft(null);
-
         childNode.setValue(3333);
-        node.setRight(childNode);
-        childNode.setParent(node);
-        childNode.setRight(null);
-        childNode.setLeft(null);
 
+        // Act, Assert
         assertEquals(childNode, node.getRight());
         assertEquals(Color.RED, node.getRight().getColor());
     }
 
     @Test
     public void setParent_setRootWithRightChild_expectsRightChild() {
-        node.setValue(500);
-        node.setParent(null);
-        node.setRight(null);
-        node.setLeft(null);
-
-        childNode.setValue(3333);
-        node.setRight(childNode);
-        childNode.setParent(node);
-        childNode.setRight(null);
-        childNode.setLeft(null);
-
+        //Assert
         assertEquals(node, childNode.getParent());
-        assertEquals(Color.BLACK, childNode.getParent().getColor());
+        assertEquals(Color.RED, node.getRight().getColor());
+        assertEquals(childNode.getValue(), node.getRight().getValue());
     }
 
     @Test
     public void setValue_setRootValueAndChangeIt_expectsRootValue() {
+        //Act
         node.setValue(500);
-        node.setParent(null);
-        node.setRight(null);
-        node.setLeft(null);
 
+        //Assert
         assertEquals(500, node.getValue());
 
+        //Act
         node.setValue(600);
 
+        //Assert
         assertEquals(600, node.getValue());
     }
 
     @Test
     public void setColor_setNode_expectsDifferentColorNode() {
+        // Arrange
         node.setValue(500);
         node.setParent(new RBTNode(DEFAULT_VALUE, null));
 
+        // Act
         node.setColor(Color.BLACK);
 
+        // Assert
         assertEquals(Color.BLACK, node.getColor());
 
+        // Act
         node.setColor(Color.RED);
 
+        // Assert
         assertEquals(Color.RED, node.getColor());
     }
 }

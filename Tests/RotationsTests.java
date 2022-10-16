@@ -1,10 +1,6 @@
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Queue;
-
 public class RotationsTests {
     /*
         !!! IMPORTANT !!!
@@ -76,19 +72,47 @@ public class RotationsTests {
 
 
     /*
+              |                    |
+             24                    24
+           //  \\       =>       /   \
+          18    26              18   26
+    */
+    @Test
+    void flipColors_treeRootWithoutParent_flippedColorsTreeRoot(){
+        //Arrange
+        Node root = new RBTNode(24, null, Color.BLACK);
+        root.setLeft(new RBTNode(18, root, Color.RED));
+        root.setRight(new RBTNode(26, root, Color.RED));
+
+        Node expected = new RBTNode(24, null, Color.BLACK);
+        expected.setLeft(new RBTNode(18, expected, Color.BLACK));
+        expected.setRight(new RBTNode(26, expected, Color.BLACK));
+
+        //Act
+        Node result = Rotations.flipColors(root);
+
+        //Assert
+        assertTrue(TreeComparator.equalTrees(result, expected), "The colors must be properly flipped.");
+    }
+
+
+    /*
+               33                    33
               |                    ||
              24                    24
            //  \\       =>       /   \
           18    26              18   26
     */
     @Test
-    void flipColors_treeRoot_flippedColorsTreeRoot(){
+    void flipColors_treeRootWithParent_flippedColorsTreeRoot(){
         //Arrange
-        Node root = new RBTNode(24, null, Color.BLACK);
+        Node parent = new RBTNode(33, null, Color.BLACK);
+
+        Node root = new RBTNode(24, parent, Color.BLACK);
         root.setLeft(new RBTNode(18, root, Color.RED));
         root.setRight(new RBTNode(26, root, Color.RED));
 
-        Node expected = new RBTNode(24, null, Color.RED);
+        Node expected = new RBTNode(24, parent, Color.RED);
         expected.setLeft(new RBTNode(18, expected, Color.BLACK));
         expected.setRight(new RBTNode(26, expected, Color.BLACK));
 

@@ -4,15 +4,14 @@ import java.util.Queue;
 
 public class TreeComparator {
     public static boolean equalTrees(Node root1, Node root2){
-        ArrayList<Node> nodes1 = getNodes(root1);
+        ArrayList <Node> nodes1 = getNodes(root1);
         ArrayList <Node> nodes2 = getNodes(root2);
         if (nodes1.size() != nodes2.size()){
             return false;
         }
         for (int i=0; i<nodes1.size(); ++i){
             //If written using gererics, != must be replaced with 'equals()'
-            if (nodes1.get(i).getValue() != nodes2.get(i).getValue() ||
-                nodes1.get(i).getColor() != nodes2.get(i).getColor() ){
+            if (!equalNodes(nodes1.get(i), nodes2.get(i))){
                 return false;
             }
         }
@@ -37,5 +36,12 @@ public class TreeComparator {
         }
 
         return result;
+    }
+
+    private static boolean equalNodes(Node node1, Node node2){
+        return node1.getValue() == node2.getValue() &&
+               node1.getColor() == node2.getColor() &&
+               (node1.getParent() == node2.getParent() ||
+                    node1.getParent().getValue() == node2.getParent().getValue());
     }
 }

@@ -20,6 +20,14 @@ public class RBTNode implements Node {
         this.parent = parent;
         this.color = color;
         this.left = this.right = null;
+
+        if (this.parent != null) {
+            if (this.parent.getValue() > this.value) {
+                this.parent.setLeft(this);
+            } else {
+                this.parent.setRight(this);
+            }
+        }
     }
 
     @Override
