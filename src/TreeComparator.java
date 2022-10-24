@@ -10,7 +10,7 @@ public class TreeComparator {
             return false;
         }
         for (int i=0; i<nodes1.size(); ++i){
-            //If written using gererics, != must be replaced with 'equals()'
+            //If written using generics, != must be replaced with 'equals()'
             if (!equalNodes(nodes1.get(i), nodes2.get(i))){
                 return false;
             }
