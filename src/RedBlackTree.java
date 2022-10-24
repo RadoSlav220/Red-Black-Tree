@@ -4,13 +4,16 @@ public class RedBlackTree {
     private Node root;
     private int size;
 
-    public RedBlackTree(){
+    public RedBlackTree() {
         root = null;
         size = 0;
     }
 
-    public RedBlackTree(Collection<Integer> arr){
-
+    public RedBlackTree (Collection<Integer> arr) {
+        for (int i : arr){
+            Operations.insert(root, i);
+        }
+        size = arr.size();
     }
 
     public int size() {
@@ -21,12 +24,12 @@ public class RedBlackTree {
         return this.size == 0;
     }
 
-    public void clear(){
+    public void clear() {
         this.root = null;
         this.size = 0;
     }
 
-    public void swap(RedBlackTree other){
+    public void swap(RedBlackTree other) {
         Node tempRoot = this.root;
         this.root = other.root;
         other.root = tempRoot;
@@ -37,18 +40,40 @@ public class RedBlackTree {
     }
 
     public boolean add(int value){
-        return true;
-    }
-
-    public boolean remove(int value){
-        if (this.size == 0) {
+        try {
+            root = Operations.insert(root, value);
+            ++size;
+            return true;
+        } catch (IllegalArgumentException e){
             return false;
         }
-        return true;
+    }
+
+    public boolean remove(int value) {
+        try {
+            root = Operations.delete(root, value);
+            --size;
+            return true;
+        } catch (IllegalArgumentException e){
+            return false;
+        }
     }
 
     public boolean contains(int value){
         return contains(root, value);
+    }
+
+    public void printSorted(){
+        printSortedHelper(root);
+    }
+
+    private void printSortedHelper(Node node){
+        if (node == null){
+            return;
+        }
+        printSortedHelper(node.getLeft());
+        System.out.print(node.getValue() + " ");
+        printSortedHelper(node.getRight());
     }
 
     private boolean contains(Node currentNode, int value){
@@ -60,9 +85,9 @@ public class RedBlackTree {
         }
 
         if (currentNode.getValue() > value) {
-            return contains(currentNode.getRight(), value);
-        } else{
             return contains(currentNode.getLeft(), value);
+        } else{
+            return contains(currentNode.getRight(), value);
         }
     }
 }

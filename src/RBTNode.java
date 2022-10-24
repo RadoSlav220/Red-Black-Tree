@@ -51,6 +51,28 @@ public class RBTNode implements Node {
     }
 
     @Override
+    public Node getUncle() {
+        return this.parent == null ? null : this.parent.getSibling();
+    }
+
+    @Override
+    public Node getGrandParent() {
+        return this.parent == null ? null : this.parent.getParent();
+    }
+
+    @Override
+    public Node getSibling() {
+        if (this.parent == null){
+            return null;
+        }
+        if (this.parent.getValue() > this.getValue()){
+            return this.parent.getRight();
+        } else {
+            return this.parent.getLeft();
+        }
+    }
+
+    @Override
     public Color getColor() {
         return this.color;
     }

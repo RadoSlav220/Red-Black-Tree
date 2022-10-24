@@ -1,111 +1,64 @@
 public class Operations {
 
-    public static Node delete(Node root, int value){
-        RBTNode found = (RBTNode) findNode(root, value);
-        if (found == null) {
-            return null;
-        }
-        RBTNode leaf = found.getLeft() != null ? (RBTNode) findLeaf(found.getLeft()) : found;
-        swapValues(found, leaf);
-
-        RBTNode leafParent = (RBTNode) leaf.getParent();
-        RBTNode sibling = null;
-
-        if (leaf.getColor() == Color.RED || leafParent.getColor() == Color.RED) {
-            if (isRightChild(leafParent.getValue(), leaf.getValue())) {
-                leafParent.setRight(null);
-            } else {
-                leafParent.setLeft(null);
-            }
-            leafParent.setColor(Color.BLACK);
-            return leaf;
-        } else {
-            // remove node
-            if (isRightChild(leafParent.getValue(), leaf.getValue())) {
-                leafParent.setRight(null);
-                sibling = (RBTNode) leafParent.getLeft();
-            } else {
-                leafParent.setLeft(null);
-                sibling = (RBTNode) leafParent.getRight();
-            }
-
-            if (sibling.getColor() == Color.BLACK && sibling == leafParent.getRight()) {
-                // Right-left case
-                if (sibling.getLeft() != null) {
-                    if (sibling.getLeft().getColor() == Color.RED) {
-                        sibling = (RBTNode) Rotations.right(sibling);
-                        sibling = (RBTNode) Rotations.left(sibling.getParent());
-                    }
-                } else if (areBothChildrenOfSiblingBlack(sibling)) {
-                        sibling.flipColor();
-                        sibling = (RBTNode) Rotations.left(sibling);
-                        if (sibling.getLeft().getRight() != null) {
-                            sibling = (RBTNode) Rotations.left(sibling.getLeft());
-                            sibling.setColor(Color.BLACK);
-                            sibling.getLeft().setColor(Color.RED);
-                        }
-                }
-            } else if (sibling.getColor() == Color.BLACK && sibling == leafParent.getLeft()) {
-                // Left-left case
-                if (sibling.getLeft() != null) {
-                    if (sibling.getLeft().getColor() == Color.RED) {
-                        sibling = (RBTNode) Rotations.right(sibling.getParent());
-                        sibling.setColor(Color.BLACK);
-                        if (sibling.getLeft() != null) {
-                            sibling.getLeft().setColor(Color.BLACK);
-                        }
-                        if (sibling.getRight() != null) {
-                            sibling.getRight().setColor(Color.BLACK);
-                        }
-                    }
-                } else if (areBothChildrenOfSiblingBlack(sibling)) {
-                    sibling.flipColor();
-                    sibling = (RBTNode) Rotations.right(sibling);
-                    if (sibling.getRight().getLeft() != null) {
-                        sibling.getRight().getLeft().setColor(Color.RED);
-                    }
-                }
-            } else {
-                sibling = (RBTNode) Rotations.right(sibling);
-                if (sibling.getRight().getLeft() != null) {
-                    sibling.getRight().getLeft().setColor(Color.RED);
-                }
-            }
-        }
-
-        return leaf;
-    }
-
     public static Node insert (Node root, int value){
         if (root == null){
             return new RBTNode(value);
         }
 
-        Node parent = linkNewNode(root, value);
-        if (parent == null){
+        Node child = linkNewNode(root, value);
+        if (child == null){
             throw new IllegalArgumentException("This value is already in the tree.");
         }
 
-        while (parent != null){
-            root = balanceTree(parent);
-            parent = root.getParent();
-        }
-        root.setColor(Color.BLACK);
+        root = balanceTreeInsert(root, child);
+
         return root;
     }
+
+    public static Node delete(Node root, int value){
+        Node nodeToBeDeleted = findNode(root, value);
+        if (nodeToBeDeleted == null) {
+            throw new IllegalArgumentException("This value is not in the tree.");
+        }
+
+        Node leaf = nodeToBeDeleted.getLeft() != null ? (RBTNode) findRightMostLeaf(nodeToBeDeleted.getLeft()) : nodeToBeDeleted;
+        swapValues(nodeToBeDeleted, leaf);
+
+        if (leaf == root){
+            return null;
+        }
+
+        //Check if the leaf is red or has a red child. In this case deletion is easy.
+        if (deleteRed(leaf)){
+            return root;
+        }
+
+        root = balanceTreeDelete(root, leaf);
+
+        //The deletion itself.
+        if (isRightChild(leaf.getParent(), leaf)){
+            leaf.getParent().setRight(null);
+        } else {
+            leaf.getParent().setLeft(null);
+        }
+
+        return root;
+    }
+
+/******************************** Insert helpers *************************************/
 
     private static Node linkNewNode (Node root, int value) {
         if (root.getValue() > value) {
             if (root.getLeft() == null){
                 root.setLeft(new RBTNode(value, root));
-                return root;
+                return root.getLeft();
             } else {
                 return linkNewNode(root.getLeft(), value);
             }
         } else if (root.getValue() < value){
             if (root.getRight() == null){
                 root.setRight(new RBTNode(value, root));
-                return root;
+                return root.getRight();
             } else {
                 return linkNewNode(root.getRight(), value);
             }
@@ -114,53 +67,164 @@ public class Operations {
         }
     }
 
-    private static Node balanceTree (Node root) {
-        if (checkFlipColors(root)){
-            root = Rotations.flipColors(root);
-            return balanceTree(root);
-        } else if (checkLeftRotation(root)) {
-            root = Rotations.left(root);
-            return balanceTree(root);
-        } else if (checkRightRotation(root)) {
-            root = Rotations.right(root);
-            return balanceTree(root);
+    private static Node balanceTreeInsert (Node root, Node node) {
+        Node parent = node.getParent();
+        Node uncle = node.getUncle();
+        Node grandparent = node.getGrandParent();
+
+        if (node == root){
+            node.setColor(Color.BLACK);
+            return root;
+        }
+
+        if (isRed(parent)){
+            if (isRed(uncle)){
+                parent.setColor(Color.BLACK);
+                uncle.setColor(Color.BLACK);
+                grandparent.setColor(Color.RED);
+                return balanceTreeInsert(root, grandparent);
+            } else { //Uncle is black
+                if (isLeftLeftCase(node)) {
+                    Rotations.right(grandparent);
+                    swapColors(parent, grandparent);
+                } else if (isLeftRightCase(node)) {
+                    Rotations.left(parent);
+                    Rotations.right(grandparent);
+                    swapColors(node, grandparent);
+                }else if (isRightRightCase(node)) {
+                    Rotations.left(grandparent);
+                    swapColors(parent, grandparent);
+                }else if (isRightLeftCase(node)) {
+                    Rotations.right(parent);
+                    Rotations.left(grandparent);
+                    swapColors(node, grandparent);
+                }
+
+                //After rotations root may be changed.
+                //If changed, new root is the parent of the rotated grandparent.
+                return root == grandparent ? grandparent.getParent() : root;
+            }
         }
         return root;
     }
 
-    private static boolean checkLeftRotation(Node root){
-        return checkSingleBlackRightChild(root) ||
-               (root.getRight() != null &&
-               root.getRight().getColor() == Color.RED);
+    private static boolean isRed(Node node){
+        return node != null && node.getColor() == Color.RED;
     }
 
-    private static boolean checkSingleBlackRightChild(Node root){
-        return root.getLeft() == null &&
-               root.getRight() != null &&
-               root.getRight().getColor() == Color.BLACK;
+    //We are sure that there is grandParent, otherwise there will be no rotation.
+    private static boolean isLeftLeftCase(Node root) {
+        return root.getGrandParent().getValue() > root.getParent().getValue() &&
+               root.getParent().getValue() > root.getValue();
     }
 
-    private static boolean checkRightRotation(Node root){
-        return checkSingleBlackLeftChild(root) ||
-               (root.getLeft() != null &&
-                root.getLeft().getColor() == Color.RED &&
-                root.getLeft().getLeft() != null &&
-                root.getLeft().getLeft().getColor() == Color.RED);
+    private static boolean isLeftRightCase(Node root) {
+        return root.getGrandParent().getValue() > root.getParent().getValue() &&
+               root.getParent().getValue() < root.getValue();
     }
 
-    private static boolean checkSingleBlackLeftChild(Node root){
-        return root.getRight() == null &&
-               root.getLeft() != null &&
-               root.getLeft().getColor() == Color.BLACK;
+    private static boolean isRightRightCase(Node root) {
+        return root.getGrandParent().getValue() < root.getParent().getValue() &&
+               root.getParent().getValue() < root.getValue();
     }
 
-    private static boolean checkFlipColors(Node root){
-        return  root.getLeft() != null &&
-                root.getRight() != null &&
-                root.getLeft().getColor() == Color.RED &&
-                root.getRight().getColor() == Color.RED;
+    private static boolean isRightLeftCase(Node root) {
+        return root.getGrandParent().getValue() < root.getParent().getValue() &&
+               root.getParent().getValue() > root.getValue();
     }
 
+    private static void swapColors (Node node1, Node node2) {
+        Color temp = node1.getColor();
+        node1.setColor(node2.getColor());
+        node2.setColor(temp);
+    }
+
+/******************************** Delete helpers *************************************/
+
+    private static boolean deleteRed(Node leaf){
+        if (isRed(leaf)) {
+            if (isRightChild(leaf.getParent(), leaf)){
+                leaf.getParent().setRight(null);
+            } else {
+                leaf.getParent().setLeft(null);
+            }
+            return true;
+        } else if (isRed(leaf.getLeft())) {
+            swapValues(leaf, leaf.getLeft());
+            leaf.setLeft(null);
+            return true;
+        } else if (isRed(leaf.getRight())){
+            swapValues(leaf, leaf.getRight());
+            leaf.setRight(null);
+            return true;
+        }
+        return false;
+    }
+
+    private static Node balanceTreeDelete(Node root, Node node){
+        if (isRed(node.getSibling())){
+            return redSiblingCase(root, node);
+        } else {
+            return blackSiblingCase(root, node);
+        }
+    }
+
+    private static Node redSiblingCase(Node root, Node leaf) {
+        Node parent = leaf.getParent();
+        Node sibling = leaf.getSibling();
+
+        if (isRightChild(parent, sibling)) {
+            Rotations.left(parent);
+            parent.setColor(Color.BLACK);
+            sibling.setColor(Color.BLACK);
+            parent.getRight().setColor(Color.RED);
+        } else {
+            Rotations.right(parent);
+            parent.setColor(Color.BLACK);
+            sibling.setColor(Color.BLACK);
+            parent.getLeft().setColor(Color.RED);
+        }
+
+        //Previous parent is now child of the sibling
+        return parent == root ? parent.getParent() : root;
+    }
+
+    private static Node blackSiblingCase(Node root, Node leaf){
+        Node parent = leaf.getParent();
+        Node sibling = leaf.getSibling();
+
+        if (isDoubleBlackLeftLeftCase(sibling)) {
+            Rotations.right(parent);
+            swapColors(parent, parent.getParent());
+            sibling.getLeft().setColor(Color.BLACK);
+        } else if (isDoubleBlackLeftRightCase(sibling)) {
+            Rotations.left(sibling);
+            Rotations.right(parent);
+            parent.getParent().setColor(parent.getColor());
+            parent.setColor(Color.BLACK);
+        } else if (isDoubleBlackRightRightCase(sibling)) {
+            Rotations.left(parent);
+            swapColors(parent, parent.getParent());
+            sibling.getRight().setColor(Color.BLACK);
+        } else if (isDoubleBlackRightLeftCase(sibling)) {
+            Rotations.right(sibling);
+            Rotations.left(parent);
+            parent.getParent().setColor(parent.getColor());
+            parent.setColor(Color.BLACK);
+        } else if (areBothChildrenOfSiblingBlack(sibling)) {
+            sibling.setColor(Color.RED);
+            if (parent.getColor() == Color.RED || parent.getParent() == null){
+                parent.setColor(Color.BLACK);
+                return root;
+            } else {
+                return balanceTreeDelete(root, parent);
+            }
+        }
+
+        //Previous parent is now child of the sibling/sibling's child
+        return parent == root ? parent.getParent() : root;
+    }
+    
     private static Node findNode (Node root, int value) {
         if (root == null){
             return null;
@@ -175,12 +239,12 @@ public class Operations {
         }
     }
 
-    private static Node findLeaf (Node node) {
+    private static Node findRightMostLeaf (Node node) {
         if (node.getRight() == null) {
             return node;
         }
 
-        return findLeaf(node.getRight());
+        return findRightMostLeaf(node.getRight());
     }
 
     private static void swapValues (Node node1, Node node2) {
@@ -189,14 +253,32 @@ public class Operations {
         node2.setValue(temp);
     }
 
-    private static boolean isRightChild (int parentValue, int childValue) {
-        return parentValue < childValue;
+    private static boolean isRightChild (Node parent, Node child) {
+        return parent.getRight() != null &&
+               parent.getRight().getValue() == child.getValue();
     }
 
     private static boolean areBothChildrenOfSiblingBlack (Node sibling) {
-        return ((sibling.getLeft() != null && sibling.getRight() != null
-                && sibling.getLeft().getColor() == Color.BLACK
-                && sibling.getRight().getColor() == Color.BLACK) ||
-                (sibling.getLeft() == null && sibling.getRight() == null));
+        return !isRed(sibling.getLeft()) && !isRed(sibling.getRight());
+    }
+
+    private static boolean isDoubleBlackLeftLeftCase (Node node) {
+        return node.getLeft() != null && node.getLeft().getColor() ==
+                Color.RED && !isRightChild(node.getParent(), node);
+    }
+
+    private static boolean isDoubleBlackLeftRightCase (Node node) {
+        return node.getRight() != null && node.getRight().getColor() ==
+                Color.RED && !isRightChild(node.getParent(), node);
+    }
+
+    private static boolean isDoubleBlackRightRightCase (Node node) {
+        return node.getRight() != null && node.getRight().getColor() ==
+                Color.RED && isRightChild(node.getParent(), node);
+    }
+
+    private static boolean isDoubleBlackRightLeftCase (Node node) {
+        return node.getLeft() != null && node.getLeft().getColor() ==
+                Color.RED && isRightChild(node.getParent(), node);
     }
 }

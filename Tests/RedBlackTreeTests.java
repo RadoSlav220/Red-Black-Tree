@@ -6,8 +6,8 @@ public class RedBlackTreeTests {
     private final int[] nodesValues = {16, 8, 28, 4, 12, 24, 36, 2, 18, 26, 32};
     private RedBlackTree getTree(){
         RedBlackTree tree = new RedBlackTree();
-        for (int i=0; i<nodesValues.length; ++i){
-            tree.add(nodesValues[i]);
+        for (int i : nodesValues){
+            tree.add(i);
         }
         return tree;
     }
@@ -50,13 +50,13 @@ public class RedBlackTreeTests {
         //Arrange
         RedBlackTree tree1 = new RedBlackTree();
         int[] values1 = {4, 15, -21, 0};
-        for (int i=0; i<values1.length; ++i){
-            tree1.add(values1[i]);
+        for (int i : values1){
+            tree1.add(i);
         }
         RedBlackTree tree2 = new RedBlackTree();
         int[] values2 = {1, 15, -2, 6, 8};
-        for (int i=0; i<values2.length; ++i){
-            tree2.add(values2[i]);
+        for (int i : values2){
+            tree2.add(i);
         }
 
         //Act
@@ -64,12 +64,12 @@ public class RedBlackTreeTests {
 
         //Assert
         assertEquals(values2.length, tree1.size(), "Size of tree1 should be the size of values2.");
-        for (int i=0; i<values2.length; ++i){
-            assertTrue(tree1.contains(values2[i]), "All elements in values2 should be contained in tree1.");
+        for (int i : values2){
+            assertTrue(tree1.contains(i), "All elements in values2 should be contained in tree1.");
         }
         assertEquals(values1.length, tree2.size(), "Size of tree2 should be the size of values1.");
-        for (int i=0; i<values1.length; ++i){
-            assertTrue(tree2.contains(values1[i]), "All elements in values1 should be contained in tree2.");
+        for (int i : values1){
+            assertTrue(tree2.contains(i), "All elements in values1 should be contained in tree2.");
         }
     }
 
@@ -113,8 +113,8 @@ public class RedBlackTreeTests {
         //Assert
         assertFalse(successful, "Addition must fail.");
         assertEquals(startSize, tree.size(), "Size must not be changed.");
-        for (int i=0; i<nodesValues.length; ++i){
-            assertTrue(tree.contains(nodesValues[i]), "All elements must be there unchanged.");
+        for (int i : nodesValues){
+            assertTrue(tree.contains(i), "All elements must be there unchanged.");
         }
     }
 
@@ -133,6 +133,7 @@ public class RedBlackTreeTests {
         assertEquals(startSize - 1, tree.size(), "Size must be decreased by 1.");
     }
 
+    @Test
     void remove_removeAnExistingElement_OnlyTheRemovedElementShouldNoLongerBeThere(){
         //Arrange
         RedBlackTree tree = getTree();
@@ -144,9 +145,9 @@ public class RedBlackTreeTests {
         //Assert
         assertTrue(successful);
         assertFalse(tree.contains(28), "The element should no longer be there.");
-        for (int i=0; i<nodesValues.length; ++i){
-            if (nodesValues[i] != elementToRemove){
-                assertTrue(tree.contains(nodesValues[i]), "All other element should be still there.");
+        for (int i : nodesValues){
+            if (i != elementToRemove){
+                assertTrue(tree.contains(i), "All other element should be still there.");
             }
         }
     }
@@ -164,8 +165,8 @@ public class RedBlackTreeTests {
         //Assert
         assertFalse(successful);
         assertEquals(startSize, tree.size(), "Size must not be changed.");
-        for (int i=0; i<nodesValues.length; ++i){
-            assertTrue(tree.contains(nodesValues[i]), "All elements must be still there.");
+        for (int i : nodesValues){
+            assertTrue(tree.contains(i), "All elements must be still there.");
         }
     }
 

@@ -3,6 +3,9 @@ public interface Node {
     Node getParent();
     Node getLeft();
     Node getRight();
+    Node getUncle();
+    Node getGrandParent();
+    Node getSibling();
     Color getColor();
 
     void setLeft(RBTNode node);
