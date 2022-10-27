@@ -1,4 +1,7 @@
 import org.junit.jupiter.api.Test;
+
+import java.util.ArrayList;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class RedBlackTreeTests {
@@ -179,4 +182,24 @@ public class RedBlackTreeTests {
         assertFalse(tree.remove(23), "Must not be able to remove any element since the tree is empty.");
         assertTrue(tree.empty(), "Tree must still be empty.");
     }
+
+    @Test
+    public void iterator_testFor() {
+        RedBlackTree tree = new RedBlackTree();
+        tree.add(1);
+        tree.add(2);
+        tree.add(3);
+        tree.add(4);
+        tree.add(5);
+        tree.add(6);
+        tree.add(7);
+        tree.add(8);
+
+        int i = 1;
+        for (int el : tree) {
+            assertEquals(el, i);
+            i++;
+        }
+    }
+
 }
