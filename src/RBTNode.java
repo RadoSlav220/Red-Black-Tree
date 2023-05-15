@@ -1,51 +1,109 @@
 public class RBTNode implements Node {
+
     private int value;
     private Color color;
     private Node parent;
     private Node left;
     private Node right;
 
-    public RBTNode (int value, Node parent){
 
+    public RBTNode (int value) {
+        this(value, null, Color.BLACK);
+    }
+
+    public RBTNode (int value, Node parent) {
+        this(value, parent, Color.RED);
+    }
+
+    public RBTNode (int value, Node parent, Color color) {
+        this.value = value;
+        this.parent = parent;
+        this.color = color;
+        this.left = this.right = null;
+
+        if (this.parent != null) {
+            if (this.parent.getValue() > this.value) {
+                this.parent.setLeft(this);
+            } else {
+                this.parent.setRight(this);
+            }
+        }
     }
 
     @Override
     public int getValue() {
-        return 0;
+        return this.value;
     }
 
     @Override
     public Node getParent() {
-        return null;
+        return this.parent;
     }
 
     @Override
     public Node getLeft() {
-        return null;
+        return this.left;
     }
 
     @Override
     public Node getRight() {
-        return null;
+        return this.right;
+    }
+
+    @Override
+    public Node getUncle() {
+        return this.parent == null ? null : this.parent.getSibling();
+    }
+
+    @Override
+    public Node getGrandParent() {
+        return this.parent == null ? null : this.parent.getParent();
+    }
+
+    @Override
+    public Node getSibling() {
+        if (this.parent == null){
+            return null;
+        }
+        if (this.parent.getValue() > this.getValue()){
+            return this.parent.getRight();
+        } else {
+            return this.parent.getLeft();
+        }
     }
 
     @Override
     public Color getColor() {
-        return null;
+        return this.color;
     }
 
     @Override
-    public void setLeft() {
-
+    public void setLeft(RBTNode newLeft) {
+        this.left = newLeft;
     }
 
     @Override
-    public void setRight() {
-
+    public void setRight(RBTNode newRight) {
+        this.right = newRight;
     }
 
     @Override
-    public void setParent() {
+    public void setParent(RBTNode parent) {
+        this.parent = parent;
+    }
 
+    @Override
+    public void setValue(int value){
+        this.value = value;
+    }
+
+    @Override
+    public void setColor(Color color) {
+        this.color = color;
+    }
+
+    @Override
+    public void flipColor(){
+        this.color = this.color == Color.BLACK ? Color.RED : Color.BLACK;
     }
 }
